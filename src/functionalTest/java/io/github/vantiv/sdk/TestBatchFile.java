@@ -734,19 +734,14 @@ public class TestBatchFile {
 
     @Test
     public void testMITSellerInfoSellerAddress() {
+        Assume.assumeFalse(preliveStatus.equalsIgnoreCase("down"));
         String requestFileName = "cnpSdk-testBatchFile-MECHA-" + TIME_STAMP + ".xml";
-        CnpBatchFileRequest request = new CnpBatchFileRequest(
-                requestFileName);
+        CnpBatchFileRequest request = new CnpBatchFileRequest(requestFileName);
 
         Properties configFromFile = request.getConfig();
-
-// pre-assert the config file has required param values
-        assertEquals("payments.vantivprelive.com",
-                configFromFile.getProperty("batchHost"));
-
-
-// assertEquals("15000", configFromFile.getProperty("batchPort"));
-
+        // pre-assert the config file has required param values
+        assertEquals("payments.vantivprelive.com", configFromFile.getProperty("batchHost"));
+        // assertEquals("15000", configFromFile.getProperty("batchPort"));
         CnpBatchRequest batch = request.createBatch(configFromFile.getProperty("merchantId"));
 
         Authorization authorization_mit = new Authorization();
@@ -814,10 +809,8 @@ public class TestBatchFile {
         batch.addTransaction(saleInfo);
 
         int transactionCount = batch.getNumberOfTransactions();
-
         CnpBatchFileResponse fileResponse = request.sendToCnpSFTP();
-        CnpBatchResponse batchResponse = fileResponse
-                .getNextCnpBatchResponse();
+        CnpBatchResponse batchResponse = fileResponse.getNextCnpBatchResponse();
         int txns = 0;
 
         ResponseValidatorProcessor processor = new ResponseValidatorProcessor();
@@ -825,7 +818,6 @@ public class TestBatchFile {
         while (batchResponse.processNextTransaction(processor)) {
             txns++;
         }
-
         assertEquals(transactionCount, txns);
         assertEquals(transactionCount, processor.responseCount);
     }
@@ -992,7 +984,7 @@ public class TestBatchFile {
                 .getNextCnpBatchResponse();
         int txns = 0;
 
-//        ResponseValidatorProcessor processor = new ResponseValidatorProcessor();
+        //        ResponseValidatorProcessor processor = new ResponseValidatorProcessor();
 
         while (batchResponse
                 .processNextTransaction(new CnpResponseProcessor() {
